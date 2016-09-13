@@ -1,0 +1,40 @@
+{
+  "name": "ts-rx-rest",
+  "version": "0.1.2",
+  "description": "Rest with RxJS and types",
+  "main": "dist/Rest.js",
+  "typings": "dist/Rest.d.ts",
+  "scripts": {
+    "postinstall": "typings install",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FundCount/ts-rx-rest.git"
+  },
+  "author": "FundCount, LLC",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FundCount/ts-rx-rest/issues"
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "homepage": "https://github.com/FundCount/ts-rx-rest",
+  "devDependencies": {
+    "babel-cli": "6.14.0",
+    "babel-preset-es2015": "6.9.0",
+    "typescript": "1.8.10"
+  },
+  "dependencies": {
+    "rest": "^1.3.2",
+    "rx": "^4.1.0"
+  },
+  "keywords": [
+    "rxjs",
+    "frp",
+    "rest",
+    "http"
+  ]
+}

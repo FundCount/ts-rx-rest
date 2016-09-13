@@ -1,0 +1,9 @@
+{
+  "name": "ts-rx-rest",
+  "version": false,
+  "globalDependencies": {
+    "rest": "registry:dt/rest#1.3.1+20160317120654",
+    "rx": "npm:rx/ts/rx.all.d.ts",
+    "when": "registry:dt/when#2.4.0+20160317120654"
+  }
+}
