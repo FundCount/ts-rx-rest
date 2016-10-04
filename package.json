@@ -1,12 +1,13 @@
 {
   "name": "ts-rx-rest",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Rest with RxJS and types",
   "main": "dist/Rest.js",
   "typings": "dist/Rest.d.ts",
   "scripts": {
     "postinstall": "typings install",
-    "build": "tsc"
+    "build": "tsc",
+    "publish": "tsc && npm publish"
   },
   "repository": {
     "type": "git",
