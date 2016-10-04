@@ -1,6 +1,6 @@
 {
   "name": "ts-rx-rest",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Rest with RxJS and types",
   "main": "dist/Rest.js",
   "typings": "dist/Rest.d.ts",
