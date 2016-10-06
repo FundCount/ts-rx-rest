@@ -1,3 +1,7 @@
+/// <reference path="../node_modules/rx/ts/rx.all.d.ts" />
+/// <reference path="../node_modules/@types/rest/index.d.ts" />
+/// <reference path="../node_modules/@types/when/index.d.ts" />
+
 import {Observable} from 'rx';
 import * as Client from 'rest';
 import * as mime from 'rest/interceptor/mime';
