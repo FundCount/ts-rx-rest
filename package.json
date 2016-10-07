@@ -6,7 +6,7 @@
   "typings": "dist/Rest.d.ts",
   "scripts": {
     "build": "tsc",
-    "publish": "tsc && npm publish"
+    "publish": "npm run build"
   },
   "repository": {
     "type": "git",
