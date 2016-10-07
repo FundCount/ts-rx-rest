@@ -1,6 +1,6 @@
-/// <reference path="../node_modules/rx/ts/rx.all.d.ts" />
-/// <reference path="../node_modules/@types/rest/index.d.ts" />
-/// <reference path="../node_modules/@types/when/index.d.ts" />
+/// <reference types="rest" />
+/// <reference types="when" />
+/// <reference types="rx" />
 
 import {Observable} from 'rx';
 import * as Client from 'rest';
