@@ -1,7 +1,5 @@
 /// <reference types="rest" />
 /// <reference types="when" />
-/// <reference types="rx" />
-
 import {Observable} from 'rx';
 import * as Client from 'rest';
 import * as mime from 'rest/interceptor/mime';
