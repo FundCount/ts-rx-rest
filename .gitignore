@@ -1,5 +1,4 @@
 .*
-/typings
 /dist
 /node_modules
 *.iml

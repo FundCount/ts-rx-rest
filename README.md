@@ -27,5 +27,7 @@ Create file `index.d.ts` along with `package.json` with the following content:
 ```
 import Rest from 'ts-rx-rest';
 
-Rest.doGet<Array<User>>('/users').subscribe(users => console.log(users));
+const rest = new Rest();
+
+rest.doGet<Array<User>>('/users').subscribe(users => console.log(users));
 ```

@@ -1,36 +1,42 @@
 /// <reference types="rest" />
-/// <reference types="when" />
 import {Observable} from 'rx';
-import * as Client from 'rest';
+import * as rest from 'rest';
 import * as mime from 'rest/interceptor/mime';
 import * as errorCode from 'rest/interceptor/errorCode';
 
-const rest = Client.wrap(mime, {mime: 'application/json'}).wrap(errorCode);
-
 export default class Rest {
+    client: rest.Client;
 
-    static doGet<T>(path: string): Observable<T> {
-        return Observable.fromPromise(rest(path)).map(response => response.entity);
+    constructor(client: rest.Client = rest.wrap(mime, {mime: 'application/json'}).wrap(errorCode)) {
+        this.client = client;
     }
 
-    static doPut<T, R>(path: string, entity: T): Observable<R> {
-        return Observable.fromPromise(rest({
+    wrap<T>(interceptor: rest.Interceptor<T>, config?: T): Rest {
+        return new Rest(this.client.wrap(interceptor, config));
+    }
+
+    doGet<T>(path: string): Observable<T> {
+        return Observable.fromPromise(this.client(path)).map(response => response.entity);
+    }
+
+    doPut<T, R>(path: string, entity: T): Observable<R> {
+        return Observable.fromPromise(this.client({
             path,
             method: 'PUT',
             entity
         })).map(response => response.entity);
     }
 
-    static doPost<T, R>(path: string, entity: T): Observable<R> {
-        return Observable.fromPromise(rest({
+    doPost<T, R>(path: string, entity: T): Observable<R> {
+        return Observable.fromPromise(this.client({
             path,
             method: 'POST',
             entity
         })).map(response => response.entity);
     }
 
-    static doDelete(path: string): Observable<any> {
-        return Observable.fromPromise(rest({
+    doDelete(path: string): Observable<any> {
+        return Observable.fromPromise(this.client({
             path,
             method: 'DELETE'
         }));
