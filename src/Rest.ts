@@ -1,9 +1,30 @@
 import {Observable} from 'rx';
 
 export const jsonInterceptor = (o: Observable<any>) => o.map(v => JSON.parse(v.responseText));
-export const errorInterceptor = (o: Observable<any>) =>
-    o.flatMap(v => v.status >= 200 && v.status < 300 ? Observable.just(v) : Observable.throw(new Error(v.responseText)));
 
+export class RestError extends Error {
+    constructor(public message: string, public entity: any) {
+        super(message);
+    }
+}
+
+export const errorInterceptor = (o: Observable<any>) =>
+    o.flatMap(v => {
+        if (v.status >= 200 && v.status < 300) {
+            return Observable.just(v);
+        } else {
+            let entity;
+            try {
+                const jsonContentType = "application/json";
+                if (v.getResponseHeader("Content-Type").substring(0, jsonContentType.length) === jsonContentType) {
+                    entity = JSON.parse(v.responseText);
+                }
+            } catch (e) {
+
+            }
+            return Observable.throw(new RestError(!!v.statusText ? v.statusText : v.responseText, entity))
+        }
+    });
 
 export default class Rest {
 
