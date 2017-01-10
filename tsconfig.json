@@ -10,8 +10,10 @@
     "experimentalDecorators": true,
     "outDir": "dist"
   },
+  "typeRoots": ["node_modules/@types"],
   "exclude": [
     "dist",
-    "node_modules"
+    "node_modules",
+    "__tests__"
   ]
 }

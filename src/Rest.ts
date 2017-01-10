@@ -1,44 +1,59 @@
-/// <reference types="rest" />
-import {Observable} from 'rx';
-import * as rest from 'rest';
-import * as mime from 'rest/interceptor/mime';
-import * as errorCode from 'rest/interceptor/errorCode';
+import {Observable, Observer} from 'rx';
+
+export const jsonInterceptor = (o: Observable<any>) => o.map(v => JSON.parse(v.responseText));
+export const errorInterceptor = (o: Observable<any>) =>
+    o.flatMap(v => v.status >= 200 && v.status < 300 ? Observable.just(v) : Observable.throw(new Error(v.responseText)));
+
 
 export default class Rest {
-    client: rest.Client;
 
-    constructor(client: rest.Client = rest.wrap(mime, {mime: 'application/json'}).wrap(errorCode)) {
-        this.client = client;
+    interceptors: Array<(o: Observable<any>) => Observable<any>> = [];
+
+    wrap(interceptor: (o: Observable<any>) => Observable<any>) {
+        this.interceptors.push(interceptor);
+        return this;
     }
 
-    wrap<T>(interceptor: rest.Interceptor<T>, config?: T): Rest {
-        return new Rest(this.client.wrap(interceptor, config));
+    constructor(private httpRequestConsturtor?: new () => XMLHttpRequest) {
+    }
+
+    ajax<T>(url: string, method: string, data: any): Observable<T> {
+        const result = Observable.create<any>(observer => {
+            try {
+                const x = (this.httpRequestConsturtor) ? new this.httpRequestConsturtor : new XMLHttpRequest();
+                x.open(method, url, true);
+                x.setRequestHeader('Content-Type', 'application/json');
+                x.onreadystatechange = function () {
+                    if (this.readyState === 4) {
+                        console.log(this.responseText);
+                        observer.onNext(this);
+                        observer.onCompleted();
+                    }
+                };
+                x.send(data ? JSON.stringify(data) : undefined);
+            } catch (e) {
+                observer.onError(e);
+                observer.onCompleted();
+            }
+        });
+
+
+        return this.interceptors.reduce((acc, interceptor) => interceptor(acc), result);
     }
 
     doGet<T>(path: string): Observable<T> {
-        return Observable.fromPromise(this.client(path)).map(response => response.entity);
+        return this.ajax<T>(path, 'GET', undefined);
     }
 
     doPut<T, R>(path: string, entity: T): Observable<R> {
-        return Observable.fromPromise(this.client({
-            path,
-            method: 'PUT',
-            entity
-        })).map(response => response.entity);
+        return this.ajax<R>(path, 'PUT', entity);
     }
 
     doPost<T, R>(path: string, entity: T): Observable<R> {
-        return Observable.fromPromise(this.client({
-            path,
-            method: 'POST',
-            entity
-        })).map(response => response.entity);
+        return this.ajax<R>(path, 'POST', entity);
     }
 
     doDelete(path: string): Observable<any> {
-        return Observable.fromPromise(this.client({
-            path,
-            method: 'DELETE'
-        }));
+        return this.ajax<any>(path, 'DELETE', undefined);
     }
 }
