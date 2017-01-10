@@ -1,4 +1,4 @@
-import {Observable, Observer} from 'rx';
+import {Observable} from 'rx';
 
 export const jsonInterceptor = (o: Observable<any>) => o.map(v => JSON.parse(v.responseText));
 export const errorInterceptor = (o: Observable<any>) =>
@@ -25,7 +25,6 @@ export default class Rest {
                 x.setRequestHeader('Content-Type', 'application/json');
                 x.onreadystatechange = function () {
                     if (this.readyState === 4) {
-                        console.log(this.responseText);
                         observer.onNext(this);
                         observer.onCompleted();
                     }
