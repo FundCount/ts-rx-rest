@@ -8,7 +8,8 @@
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "types" : []
   },
   "typeRoots": ["node_modules/@types"],
   "exclude": [

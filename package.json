@@ -29,7 +29,7 @@
       "tsx",
       "js"
     ],
-    "testRegex": "/__tests__/.*\\.(ts|tsx|js)$"
+    "testRegex": "/__tests__/.*\\.(test|spec)\\.(ts|tsx|js)$"
   },
   "homepage": "https://github.com/FundCount/ts-rx-rest",
   "devDependencies": {
