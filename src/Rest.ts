@@ -35,13 +35,13 @@ export default class Rest {
         return this;
     }
 
-    constructor(private httpRequestConsturtor?: new () => XMLHttpRequest) {
+    constructor(private httpRequestConstructor?: new () => XMLHttpRequest) {
     }
 
-    ajax<T>(url: string, method: string, data: any): Observable<T> {
+    ajax<T>(url: string, method: string, data?: any): Observable<T> {
         const result = Observable.create<any>(observer => {
             try {
-                const x = (this.httpRequestConsturtor) ? new this.httpRequestConsturtor : new XMLHttpRequest();
+                const x = (this.httpRequestConstructor) ? new this.httpRequestConstructor : new XMLHttpRequest();
                 x.open(method, url, true);
                 x.setRequestHeader('Content-Type', 'application/json');
                 x.onreadystatechange = function () {
@@ -62,7 +62,7 @@ export default class Rest {
     }
 
     doGet<T>(path: string): Observable<T> {
-        return this.ajax<T>(path, 'GET', undefined);
+        return this.ajax<T>(path, 'GET');
     }
 
     doPut<T, R>(path: string, entity: T): Observable<R> {
@@ -74,6 +74,6 @@ export default class Rest {
     }
 
     doDelete(path: string): Observable<any> {
-        return this.ajax<any>(path, 'DELETE', undefined);
+        return this.ajax<any>(path, 'DELETE');
     }
 }
