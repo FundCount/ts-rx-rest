@@ -6,7 +6,7 @@
   "typings": "dist/Rest.d.ts",
   "scripts": {
     "build": "tsc",
-    "publish": "npm run build",
+    "prepublish": "npm run build",
     "test": "jest"
   },
   "repository": {
