@@ -24,10 +24,23 @@ Create file `index.d.ts` along with `package.json` with the following content:
 ### Usage
 
 
-```
-import Rest from 'ts-rx-rest';
+```typescript
+import Rest, {errorInterceptor, jsonInterceptor} from 'ts-rx-rest';
 
-const rest = new Rest();
+const rest = new Rest()
+    .wrap(errorInterceptor) // forwards an XMLHttpRequest object to an error branch of the observable
+    .wrap(jsonInterceptor); // converts text representation of the response to json
 
 rest.doGet<Array<User>>('/users').subscribe(users => console.log(users));
+```
+
+#### Custom interceptors
+
+```typescript
+const accessDenied = (observable: Observable<any>) =>
+    observable.doOnError(err => {
+        if (err.response.status === 403 || err.response.status === 401) {
+            // Do some stuff
+        }
+    });
 ```

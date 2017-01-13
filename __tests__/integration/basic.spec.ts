@@ -11,6 +11,7 @@ app.get('/test', (req, res) => res.json({value: 1234}));
 app.post('/testPost', (req, res) => res.json({value: req.body.value + 1}));
 app.put('/testPut', (req, res) => res.json({value: req.body.value + 1}));
 app.delete('/testDelete', (req, res) => res.json({status: 'ok'}));
+app.get('/jsonError', (req, res) => res.status(403).send({ error: 'Something failed!' }));
 
 let server;
 
@@ -58,4 +59,10 @@ it('Should handle an error', () => {
     return new Rest(XMLHttpRequest).wrap(errorInterceptor).doGet<TestObject>('http://localhost:3000/404')
         .toPromise()
         .then(() => {}, (val) => expect(val.message).toBe('Cannot GET /404\n'));
+});
+
+it('Should handle an error json', () => {
+    return new Rest(XMLHttpRequest).wrap(errorInterceptor).wrap(jsonInterceptor).doGet<TestObject>('http://localhost:3000/jsonError')
+        .toPromise()
+        .then(() => {}, (val) => expect(val.entity.error).toBe('Something failed!'));
 });
