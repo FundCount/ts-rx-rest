@@ -47,14 +47,18 @@ export default class Rest {
             try {
                 const x = (this.httpRequestConstructor) ? new this.httpRequestConstructor : new XMLHttpRequest();
                 x.open(method, url, true);
-                x.setRequestHeader('Content-Type', 'application/json');
                 x.onreadystatechange = function () {
                     if (this.readyState === 4) {
                         observer.onNext(this);
                         observer.onCompleted();
                     }
                 };
-                x.send(data ? JSON.stringify(data) : undefined);
+                if (data instanceof FormData) {
+                    x.send(data);
+                } else {
+                    x.setRequestHeader('Content-Type', 'application/json');
+                    x.send(data ? JSON.stringify(data) : undefined);
+                }
             } catch (e) {
                 observer.onError(e);
                 observer.onCompleted();
