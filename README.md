@@ -25,9 +25,10 @@ Create file `index.d.ts` along with `package.json` with the following content:
 
 
 ```typescript
-import Rest, {errorInterceptor, jsonInterceptor} from 'ts-rx-rest';
+import Rest, {errorInterceptor, jsonInterceptor, withCredentialsInterceptors} from 'ts-rx-rest';
 
 const rest = new Rest()
+    .wrapRequest(withCredentialsInterceptors) // or .withCredentials()
     .wrap(errorInterceptor) // forwards an XMLHttpRequest object to an error branch of the observable
     .wrap(jsonInterceptor); // converts text representation of the response to json
 
@@ -35,6 +36,17 @@ rest.doGet<Array<User>>('/users').subscribe(users => console.log(users));
 ```
 
 #### Custom interceptors
+
+#### Request interceptors
+
+```typescript
+const withCredentialsInterceptors = (r: XMLHttpRequest) => {
+    r.withCredentials = true;
+    return r;
+};
+```
+
+#### Response interceptors
 
 ```typescript
 const accessDenied = (observable: Observable<any>) =>

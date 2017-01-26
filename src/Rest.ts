@@ -30,7 +30,7 @@ export const errorInterceptor = (o: Observable<any>) =>
         }
     });
 
-export const withCredentialsInterceptors = (r: XMLHttpRequest) => {
+export const withCredentialsInterceptor = (r: XMLHttpRequest) => {
     r.withCredentials = true;
     return r;
 };
@@ -51,7 +51,7 @@ export default class Rest {
     }
 
     withCredentials(): Rest {
-        return this.wrapRequest(withCredentialsInterceptors);
+        return this.wrapRequest(withCredentialsInterceptor);
     }
 
     constructor(private httpRequestConstructor?: new () => XMLHttpRequest) {
