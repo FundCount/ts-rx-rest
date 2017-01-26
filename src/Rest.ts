@@ -30,13 +30,28 @@ export const errorInterceptor = (o: Observable<any>) =>
         }
     });
 
+export const withCredentialsInterceptors = (r: XMLHttpRequest) => {
+    r.withCredentials = true;
+    return r;
+};
+
 export default class Rest {
 
     interceptors: Array<(o: Observable<any>) => Observable<any>> = [];
+    requestInterceptors: Array<(r: XMLHttpRequest) => XMLHttpRequest> = [];
 
-    wrap(interceptor: (o: Observable<any>) => Observable<any>) {
+    wrap(interceptor: (o: Observable<any>) => Observable<any>): Rest {
         this.interceptors.push(interceptor);
         return this;
+    }
+
+    wrapRequest(requestInterceptor: (r: XMLHttpRequest) => XMLHttpRequest): Rest {
+        this.requestInterceptors.push(requestInterceptor);
+        return this;
+    }
+
+    withCredentials(): Rest {
+        return this.wrapRequest(withCredentialsInterceptors);
     }
 
     constructor(private httpRequestConstructor?: new () => XMLHttpRequest) {
@@ -53,11 +68,12 @@ export default class Rest {
                         observer.onCompleted();
                     }
                 };
+                const updatedRequest = this.requestInterceptors.reduce((acc, interceptor) => interceptor(acc), x);
                 if (data instanceof FormData) {
-                    x.send(data);
+                    updatedRequest.send(data);
                 } else {
-                    x.setRequestHeader('Content-Type', 'application/json');
-                    x.send(data ? JSON.stringify(data) : undefined);
+                    updatedRequest.setRequestHeader('Content-Type', 'application/json');
+                    updatedRequest.send(data ? JSON.stringify(data) : undefined);
                 }
             } catch (e) {
                 observer.onError(e);

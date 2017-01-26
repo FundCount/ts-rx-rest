@@ -66,3 +66,15 @@ it('Should handle an error json', () => {
         .toPromise()
         .then(() => {}, (val) => expect(val.entity.error).toBe('Something failed!'));
 });
+
+it('Should apply the withCredentials interceptor', () => {
+    return new Rest(XMLHttpRequest).withCredentials().doGet<XMLHttpRequest>('http://localhost:3000/test')
+        .map(req => expect(req.withCredentials).toBe(true))
+        .toPromise();
+});
+
+it('Should NOT apply the withCredentials interceptor', () => {
+    return new Rest(XMLHttpRequest).doGet<XMLHttpRequest>('http://localhost:3000/test')
+        .map(req => expect(req.withCredentials).toBe(false))
+        .toPromise();
+});
