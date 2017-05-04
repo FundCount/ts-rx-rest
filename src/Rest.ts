@@ -1,7 +1,7 @@
 import {Observable} from 'rx';
 
 export const jsonInterceptor = (o: Observable<any>) =>
-    o.map(v => JSON.parse(v.responseText))
+    o.map(v => v.status === 204 ? undefined : JSON.parse(v.responseText))
         .catch(e => {
             let entity;
             try {
