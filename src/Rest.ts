@@ -57,7 +57,7 @@ export default class Rest {
     constructor(private httpRequestConstructor?: new () => XMLHttpRequest) {
     }
 
-    ajax<T>(url: string, method: string, data?: any): Observable<T> {
+    ajax<T>(url: string, method: string, data?: any, onUploadProgress?: (e: ProgressEvent) => any): Observable<T> {
         const result = Observable.create<any>(observer => {
             try {
                 const x = (this.httpRequestConstructor) ? new this.httpRequestConstructor : new XMLHttpRequest();
@@ -68,6 +68,9 @@ export default class Rest {
                         observer.onCompleted();
                     }
                 };
+                if (onUploadProgress) {
+                    x.upload.addEventListener('progress', onUploadProgress);
+                }
                 const updatedRequest = this.requestInterceptors.reduce((acc, interceptor) => interceptor(acc), x);
                 if (data instanceof FormData) {
                     updatedRequest.send(data);
@@ -93,8 +96,8 @@ export default class Rest {
         return this.ajax<R>(path, 'PUT', entity);
     }
 
-    doPost<T, R>(path: string, entity: T): Observable<R> {
-        return this.ajax<R>(path, 'POST', entity);
+    doPost<T, R>(path: string, entity: T, onUploadProgress?: (e: ProgressEvent) => any): Observable<R> {
+        return this.ajax<R>(path, 'POST', entity, onUploadProgress);
     }
 
     doDelete(path: string): Observable<any> {
