@@ -1,19 +1,21 @@
-import {Observable} from 'rx';
+import {Observable, throwError} from 'rxjs';
+import {catchError, map} from 'rxjs/operators';
 
-export const jsonInterceptor = (o: Observable<any>) =>
-    o.map(v => v.status === 204 ? undefined : JSON.parse(v.responseText))
-        .catch(e => {
+export const jsonInterceptor = (o: Observable<XMLHttpRequest>) =>
+    o.pipe(
+        map(v => v.status === 204 ? undefined : JSON.parse(v.responseText)),
+        catchError(e => {
             let entity;
             try {
-                const jsonContentType = "application/json";
-                if (e.response.getResponseHeader("Content-Type").substring(0, jsonContentType.length) === jsonContentType) {
+                const jsonContentType = 'application/json';
+                if (e.response.getResponseHeader('Content-Type').substring(0, jsonContentType.length) === jsonContentType) {
                     entity = JSON.parse(e.response.responseText);
                 }
             } catch (e) {
-
             }
-            return Observable.throw(new RestError(e.message, e.response, entity));
-        });
+            return throwError(new RestError(e.message, e.response, entity));
+        })
+    );
 
 export class RestError extends Error {
     constructor(public message: string, public response: XMLHttpRequest, public entity: any) {
@@ -21,14 +23,14 @@ export class RestError extends Error {
     }
 }
 
-export const errorInterceptor = (o: Observable<any>) =>
-    o.map(v => {
+export const errorInterceptor = (o: Observable<XMLHttpRequest>) =>
+    o.pipe(map(v => {
         if (v.status < 400) {
             return v;
         } else {
             throw new RestError(!!v.statusText ? v.statusText : v.responseText, v, undefined);
         }
-    });
+    }));
 
 export const withCredentialsInterceptor = (r: XMLHttpRequest) => {
     r.withCredentials = true;
@@ -58,14 +60,14 @@ export default class Rest {
     }
 
     ajax<T>(url: string, method: string, data?: any, onUploadProgress?: (e: ProgressEvent) => any): Observable<T> {
-        const result = Observable.create<any>(observer => {
+        const result = new Observable<XMLHttpRequest>(observer => {
             try {
                 const x = (this.httpRequestConstructor) ? new this.httpRequestConstructor : new XMLHttpRequest();
                 x.open(method, url, true);
                 x.onreadystatechange = function () {
                     if (this.readyState === 4) {
-                        observer.onNext(this);
-                        observer.onCompleted();
+                        observer.next(this);
+                        observer.complete();
                     }
                 };
                 if (onUploadProgress) {
@@ -79,11 +81,10 @@ export default class Rest {
                     updatedRequest.send(data ? JSON.stringify(data) : undefined);
                 }
             } catch (e) {
-                observer.onError(e);
-                observer.onCompleted();
+                observer.error(e);
+                observer.complete();
             }
         });
-
 
         return this.interceptors.reduce((acc, interceptor) => interceptor(acc), result);
     }

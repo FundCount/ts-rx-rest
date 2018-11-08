@@ -14,14 +14,6 @@ Provides convenient typed wrappers for http verbs:
 ```
 $ npm install --save ts-rx-rest
 ```
-Since rx 4.* doesn't have @types, you have to manually install rx and define correct typings as follows:
-```
-$ npm install --save rx
-```
-Create file `index.d.ts` along with `package.json` with the following content:
-```
-/// <reference path="node_modules/rx/ts/rx.all.d.ts" />
-```
 
 ### Usage
 
